@@ -10,6 +10,7 @@ fccTesting(app); //For FCC testing purposes
 app.use('/public', express.static(process.cwd() + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'pug');
 
 app.route('/').get((req, res) => {
