@@ -56,12 +56,12 @@ myDB(async client => {
     });
 });
 
-app.route('/').get((req, res) => {
-    res.render('pug', {
-        title: 'Hello',
-        message: 'Please Login'
-    });
-});
+// app.route('/').get((req, res) => {
+//     res.render('pug', {
+//         title: 'Hello',
+//         message: 'Please Login'
+//     });
+// });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
