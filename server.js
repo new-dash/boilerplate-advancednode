@@ -1,34 +1,61 @@
 'use strict';
 require('dotenv').config();
 const express = require('express');
+const myDB = require('./connection');
+const fccTesting = require('./freeCodeCamp/fcctesting.js');
 const session = require('express-session');
 const passport = require('passport');
-const myDB = require('./connection');
 const ObjectID = require('mongodb').ObjectID;
-const fccTesting = require('./freeCodeCamp/fcctesting.js');
-const LocalStrategy = require('passport-local')
+const LocalStrategy = require('passport-local');
 
 const app = express();
+app.set('view engine', 'pug');
 
-fccTesting(app); //For FCC testing purposes
+fccTesting(app); // For fCC testing purposes
 app.use('/public', express.static(process.cwd() + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: true,
     saveUninitialized: true,
     cookie: { secure: false }
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.set('view engine', 'pug');
+myDB(async(client) => {
+    const myDataBase = await client.db('database').collection('users');
 
-myDB(async client => {
+    // Be sure to change the title
+    app.route('/').get((req, res) => {
+        // Change the response to render the Pug template
+        res.render('pug', {
+            title: 'Connected to Database',
+            message: 'Please login',
+            showLogin: true
+        });
+    });
 
-    const myDataBase = await client.db('adv-node-db').collection('users');
+    app.route('/login').post(passport.authenticate('local', { failureRedirect: '/' }), (req, res) => {
+        res.redirect('/profile');
+    });
 
+    app.route('/profile').get((req, res) => {
+        res.render(process.cwd() + '/views/pug/profile');
+    });
+
+    // Serialization and deserialization here...
+    passport.serializeUser((user, done) => {
+        done(null, user._id);
+    });
+    passport.deserializeUser((id, done) => {
+        myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
+            done(null, doc);
+        });
+    });
     passport.use(new LocalStrategy(
         function(username, password, done) {
             myDataBase.findOne({ username: username }, function(err, user) {
@@ -39,43 +66,15 @@ myDB(async client => {
                 return done(null, user);
             });
         }
-    ))
-
-    // Be sure to change the title
-    app.route('/').get((req, res) => {
-        //Change the response to render the Pug template
-        res.render('pug', {
-            title: 'Connected to Database',
-            message: 'Please login'
-        });
-    });
-
-    // Serialization and deserialization here...
-    passport.serializeUser((user, done) => {
-        done(null, user._id);
-    });
-
-    passport.deserializeUser((id, done) => {
-        myDB.findOne({ _id: new ObjectID(id) }, (err, doc) => {
-            done(null, doc);
-        });
-    });
-
+    ));
     // Be sure to add this...
-}).catch(e => {
+}).catch((e) => {
     app.route('/').get((req, res) => {
         res.render('pug', { title: e, message: 'Unable to login' });
     });
 });
+// app.listen out here...
 
-// app.route('/').get((req, res) => {
-//     res.render('pug', {
-//         title: 'Hello',
-//         message: 'Please Login'
-//     });
-// });
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log('Listening on port ' + PORT);
+app.listen(process.env.PORT || 3000, () => {
+    console.log('Listening on port ' + process.env.PORT);
 });
