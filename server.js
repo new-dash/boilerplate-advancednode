@@ -45,7 +45,7 @@ myDB(async(client) => {
         res.redirect('/profile');
     });
 
-    app.route('/profile').get((req, res) => {
+    app.route('/profile').get(ensureAuthenticated, (req, res) => {
         res.render(process.cwd() + '/views/pug/profile');
     });
 
@@ -53,11 +53,14 @@ myDB(async(client) => {
     passport.serializeUser((user, done) => {
         done(null, user._id);
     });
+
     passport.deserializeUser((id, done) => {
         myDataBase.findOne({ _id: new ObjectID(id) }, (err, doc) => {
             done(null, doc);
         });
     });
+
+
     passport.use(new LocalStrategy(
         function(username, password, done) {
             myDataBase.findOne({ username: username }, function(err, user) {
@@ -69,13 +72,20 @@ myDB(async(client) => {
             });
         }
     ));
-    // Be sure to add this...
 }).catch((e) => {
     app.route('/').get((req, res) => {
         res.render('pug', { title: e, message: 'Unable to login' });
     });
 });
-// app.listen out here...
+
+
+function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect('/');
+};
+
 
 app.listen(process.env.PORT || 3000, () => {
     console.log('Listening on port ' + process.env.PORT);
