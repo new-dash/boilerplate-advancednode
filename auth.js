@@ -1,6 +1,7 @@
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+
 module.exports = function(app, myDataBase) {
-
-
 
     // Serialization and deserialization here...
     passport.serializeUser((user, done) => {
