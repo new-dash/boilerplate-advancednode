@@ -3,12 +3,12 @@
     "//2": "https://docs.npmjs.com/files/package.json",
     "//3": "updating this file will download and update your packages",
     "name": "fcc-advanced-node-and-express",
-    "author": "http://github.com/JosephLivengood",
+    "author": "",
     "version": "0.0.1",
     "description": "What am I about?",
     "main": "server.js",
     "scripts": {
-        "start": "node server.js",
+        "start": "serve -s build",
         "dev": "nodemon server.js"
     },
     "dependencies": {
@@ -22,7 +22,8 @@
         "passport-github": "^1.1.0",
         "passport-local": "~1.0.0",
         "pug": "3.0.0",
-        "randombytes": "^2.1.0"
+        "randombytes": "^2.1.0",
+        "serve": "^13.0.2"
     },
     "repository": {
         "type": "git",
