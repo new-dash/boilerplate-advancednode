@@ -31,8 +31,8 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-const dburi = process.env.MONGO_URI;
-mongoose.connect(dburi, { useUnifiedTopology: true, useNewUrlParser: true }).then(() => console.log('MongoDB connected!')).catch(err => console.log('Error:- ' + err));
+//const dburi = process.env.MONGO_URI;
+//mongoose.connect(dburi, { useUnifiedTopology: true, useNewUrlParser: true }).then(() => console.log('MongoDB connected!')).catch(err => console.log('Error:- ' + err));
 
 myDB(async(client) => {
 
