@@ -45,6 +45,10 @@ myDB(async(client) => {
 
     const myDataBase = await client.db('database').collection('users');
 
+    io.on('connection', socket => {
+        console.log('A user has connected');
+    });
+
     routes(app, myDataBase);
     auth(app, myDataBase);
 
