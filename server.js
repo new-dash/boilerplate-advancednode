@@ -45,8 +45,12 @@ myDB(async(client) => {
 
     const myDataBase = await client.db('database').collection('users');
 
+    let currentUsers = 0;
+
     io.on('connection', socket => {
-        console.log('A user has connected');
+        ++currentUsers;
+        io.emit('user count', currentUsers);
+        console.log('A user has connected to the socket');
     });
 
     routes(app, myDataBase);
