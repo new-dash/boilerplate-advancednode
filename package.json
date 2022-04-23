@@ -23,7 +23,8 @@
         "passport-local": "~1.0.0",
         "pug": "3.0.0",
         "randombytes": "^2.1.0",
-        "serve": "^13.0.2"
+        "serve": "^13.0.2",
+        "socket.io": "^4.4.1"
     },
     "repository": {
         "type": "git",
