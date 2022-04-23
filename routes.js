@@ -7,7 +7,7 @@ const GitHubStrategy = require('passport-github').Strategy;
 
 module.exports = function(app, myDataBase) {
 
-    // Be sure to change the title
+    /* Index */
     app.route('/').get((req, res) => {
         // Change the response to render the Pug template
         res.render('pug', {
@@ -18,28 +18,7 @@ module.exports = function(app, myDataBase) {
         });
     });
 
-    app.route('/login').post(passport.authenticate('local', { failureRedirect: '/' }), (req, res) => {
-        res.redirect('/profile');
-    });
-
-    app.route('/auth/github').get(passport.authenticate('github'));
-
-    app.route('/auth/github/callback')
-        .get(passport.authenticate('github', { failureRedirect: '/' }), (req, res) => {
-            res.redirect('/profile');
-        });
-
-    app.route('/profile').get(ensureAuthenticated, (req, res) => {
-        res.render(process.cwd() + '/views/pug/profile', {
-            username: req.user.username
-        });
-    });
-
-    app.route('/logout').get((req, res) => {
-        req.logout();
-        res.redirect('/');
-    });
-
+    /* Register */
     app.route('/register').post((req, res, next) => {
 
             const hash = bcrypt.hashSync(req.body.password, 12);
@@ -72,12 +51,44 @@ module.exports = function(app, myDataBase) {
             res.redirect('/profile');
         }
     );
+
     app.use((req, res, next) => {
         res.status(404)
             .type('text')
             .send('Not Found');
     });
 
+    app.route('/login').post(passport.authenticate('local', { failureRedirect: '/' }), (req, res) => {
+        res.redirect('/profile');
+    });
+
+    app.route('/auth/github').get(passport.authenticate('github'));
+
+    app.route('/auth/github/callback')
+        .get(passport.authenticate('github', { failureRedirect: '/' }),
+            (req, res) => {
+                req.session.user_id = req.user.id
+                res.redirect('/profile');
+            });
+
+    app.route('/profile').get(ensureAuthenticated, (req, res) => {
+        res.render(process.cwd() + '/views/pug/profile', {
+            username: req.user.username
+        });
+    });
+
+    app.route('/chat').get((req, res) => {
+        res.render('chat', {
+            user: req.user
+        })
+    });
+
+    app.route('/logout').get((req, res) => {
+        req.logout();
+        res.redirect('/');
+    });
+
+    /* Helpers */
     function ensureAuthenticated(req, res, next) {
         if (req.isAuthenticated()) {
             return next();

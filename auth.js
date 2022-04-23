@@ -38,7 +38,7 @@ module.exports = function(app, myDataBase) {
             callbackURL: "https://boilerplate-advanced-node.herokuapp.com/auth/github/callback"
         },
         function(accessToken, refreshToken, profile, cb) {
-            //console.log(profile);
+
             myDataBase.findOneAndUpdate({ id: profile.id }, {
                     $setOnInsert: {
                         id: profile.id,
@@ -59,7 +59,7 @@ module.exports = function(app, myDataBase) {
                 (err, doc) => {
                     return cb(null, doc.value);
                 }
-            ); //Database logic here with callback containing our user object
+            );
         }
     ));
 }
