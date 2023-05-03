@@ -24,7 +24,7 @@
         "pug": "^3.0.2",
         "randombytes": "^2.1.0",
         "serve": "^13.0.2",
-        "socket.io": "^4.4.1"
+        "socket.io": "^4.6.1"
     },
     "repository": {
         "type": "git",
